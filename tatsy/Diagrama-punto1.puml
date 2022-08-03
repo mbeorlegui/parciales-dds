@@ -1,4 +1,4 @@
-@startuml Tatsy
+@startuml Tatsy-p1
 
 class Pasajeros <<(S,#FF7700) Singleton>> {
   pasajeros : List<Pasajero>

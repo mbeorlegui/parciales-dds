@@ -12,10 +12,6 @@ public class Vehiculo {
     this.estado = EstadoVehiculo.LIBRE;
   }
 
-  public void asignarViaje(Solicitud solicitud) {
-    notificar();
-  }
-
   public void notificar() {
     mediosDeComunicacion.forEach(
         medio -> medio.notificar());
@@ -31,6 +27,20 @@ public class Vehiculo {
 
   public boolean estaCercaDe(Solicitud solicitud) {
     return this.posicion.esPosicionCercana(solicitud.getPosicion());
+  }
+
+  public void liberarVehiculo(){
+    this.estado = EstadoVehiculo.LIBRE;
+  }
+  public void ocuparVehiculo(){
+    this.estado = EstadoVehiculo.OCUPADO;
+    notificar();
+  }
+  
+  public int distanciaA(Posicion posicion){
+    // TODO: A implementar cuando se sepa el la implementaciÃ³n de posicion
+    // mientras tanto deberia mockearse
+    return 0;
   }
 }
 // -------------------------------------
@@ -57,7 +67,7 @@ public class Pasajero {
   public boolean esMismoPasajero(Pasajero pasajero) {
     return this.getNombre() == pasajero.getNombre();
     // No es buena practica matchear con el nombre
-    // Pero con el diseño pedido no nos queda de otra
+    // Pero con el diseï¿½o pedido no nos queda de otra
   }
 }
 
@@ -100,10 +110,13 @@ public class Flota {
     return this.hayarVehiculoCercaDeSolicitud(solicitud) != null;
   }
 
+  // TODO: Ejecutar con tarea programada segun lo pedido en consigna
   public Vehiculo conseguirVehiculoDisponibleCercano(Solicitud solicitud) {
     if (existeVehiculoCercaDeSolicitud(solicitud)) {
       solicitud.aceptarSolicitud();
-      return hayarVehiculoCercaDeSolicitud(solicitud);
+      Vehiculo vehiculoHayado = hayarVehiculoCercaDeSolicitud(solicitud);
+      vehiculoHayado.ocuparVehiculo();
+      return vehiculoHayado;
     } else {
       solicitud.rechazarSolicitud();
       return null;
