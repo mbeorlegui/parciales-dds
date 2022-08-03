@@ -6,6 +6,7 @@ public class Vehiculo {
   public List<MedioDeComunicacion> mediosDeComunicacion = new ArrayList<MedioDeComunicacion>();
   private Posicion posicion;
   private EstadoVehiculo estado;
+  private Solicitud solicitudPendiente;
 
   public Vehiculo(Posicion posicion) {
     this.posicion = posicion;
@@ -31,10 +32,12 @@ public class Vehiculo {
 
   public void liberarVehiculo() {
     this.estado = EstadoVehiculo.LIBRE;
+    this.solicitudPendiente = null;
   }
 
-  public void ocuparVehiculo() {
+  public void ocuparVehiculo(Solicitud solicitud) {
     this.estado = EstadoVehiculo.OCUPADO;
+    this.solicitudPendiente = solicitud;
     notificar();
   }
 
@@ -111,7 +114,7 @@ public class Flota {
     if (existeVehiculoCercaDeSolicitud(solicitud)) {
       solicitud.aceptarSolicitud();
       Vehiculo vehiculoHayado = hayarVehiculoCercaDeSolicitud(solicitud);
-      vehiculoHayado.ocuparVehiculo();
+      vehiculoHayado.ocuparVehiculo(solicitud);
       return vehiculoHayado;
     } else {
       solicitud.rechazarSolicitud();
