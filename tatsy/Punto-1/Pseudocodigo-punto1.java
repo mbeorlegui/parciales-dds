@@ -29,19 +29,15 @@ public class Vehiculo {
     return this.posicion.esPosicionCercana(solicitud.getPosicion());
   }
 
-  public void liberarVehiculo(){
+  public void liberarVehiculo() {
     this.estado = EstadoVehiculo.LIBRE;
   }
-  public void ocuparVehiculo(){
+
+  public void ocuparVehiculo() {
     this.estado = EstadoVehiculo.OCUPADO;
     notificar();
   }
-  
-  public int distanciaA(Posicion posicion){
-    // TODO: A implementar cuando se sepa el la implementación de posicion
-    // mientras tanto deberia mockearse
-    return 0;
-  }
+
 }
 // -------------------------------------
 
