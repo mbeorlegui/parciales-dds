@@ -18,6 +18,10 @@ public class Vehiculo {
         medio -> medio.notificar());
   }
 
+  public boolean estaDisponible(){
+    return this.estado == EstadoVehiculo.LIBRE;
+  }
+
   public void agregarMedio(MedioDeComunicacion medio) {
     mediosDeComunicacion.add(medio);
   }
@@ -101,19 +105,22 @@ public class Flota {
     return INSTANCE;
   }
 
-  public Vehiculo hayarVehiculoCercaDeSolicitud(Solicitud solicitud) {
-    return vehiculos.stream().filter(v -> v.estaCercaDe(solicitud)).findFirst().get();
+  public Vehiculo hayarVehiculoDisponibleCercaDeSolicitud(Solicitud solicitud) {
+    return vehiculos.stream()
+      .filter(v -> v.estaCercaDe(solicitud) && v.estaDisponible())
+      .findFirst()
+      .get();
   }
 
-  public boolean existeVehiculoCercaDeSolicitud(Solicitud solicitud) {
-    return this.hayarVehiculoCercaDeSolicitud(solicitud) != null;
+  public boolean existeVehiculoDisponibleCercaDeSolicitud(Solicitud solicitud) {
+    return this.hayarVehiculoDisponibleCercaDeSolicitud(solicitud) != null;
   }
 
   // TODO: Ejecutar con tarea programada segun lo pedido en consigna
   public Vehiculo conseguirVehiculoDisponibleCercano(Solicitud solicitud) {
-    if (existeVehiculoCercaDeSolicitud(solicitud)) {
+    if (existeVehiculoDisponibleCercaDeSolicitud(solicitud)) {
       solicitud.aceptarSolicitud();
-      Vehiculo vehiculoHayado = hayarVehiculoCercaDeSolicitud(solicitud);
+      Vehiculo vehiculoHayado = hayarVehiculoDisponibleCercaDeSolicitud(solicitud);
       vehiculoHayado.ocuparVehiculo(solicitud);
       return vehiculoHayado;
     } else {
