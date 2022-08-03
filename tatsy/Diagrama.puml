@@ -1,0 +1,76 @@
+@startuml Tatsy
+
+class Pasajeros <<(S,#FF7700) Singleton>> {
+  pasajeros : List<Pasajero>
+  getInstance() : Pasajeros
+}
+
+Pasajeros --> Pasajeros
+Pasajeros --> Pasajero
+
+' Creo un singleton de Pasajeros para hayar las solicitudes de c/u
+
+class Pasajero {
+  nombre : String
+  solicitudes : List<Solicitud>
+}
+
+Pasajero -->"*" Solicitud
+
+class Solicitud {
+  hora : LocalDateTime
+  posicion : Posicion
+  estado : EstadoSolicitud
+}
+
+class Flota <<(S,#FF7700) Singleton>> {
+  vehiculos : List<Vehiculo>
+}
+' Creo que flota deberia ser un singleton, porque es única en el sistema
+' Alli estan contenidos todos los vehiculos
+Flota -->"*" Vehiculo
+
+class Vehiculo {
+  posicion : Posicion
+  estado : EstadoVehiculo
+}
+
+Solicitud --> EstadoSolicitud
+
+enum EstadoSolicitud {
+  ACEPTADO,
+  RECHAZADO,
+}
+
+Vehiculo --> EstadoVehiculo
+
+enum EstadoVehiculo {
+  OCUPADO,
+  LIBRE,
+}
+
+interface MedioDeComunicacion {
+  notificar() : void
+}
+
+class SMS {
+  notificar() : void
+}
+
+class Web {
+  notificar() : void
+}
+
+class Radio {
+  notificar() : void
+}
+
+SMS ..|> MedioDeComunicacion
+Web ..|> MedioDeComunicacion
+Radio ..|> MedioDeComunicacion
+Posicion --> Vehiculo
+Posicion --> Solicitud
+
+Vehiculo --> MedioDeComunicacion
+
+@enduml
