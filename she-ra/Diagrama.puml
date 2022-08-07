@@ -1,0 +1,75 @@
+@startuml She-Ra
+
+class Proyecto {
+  nombre : String
+  tareas : List<Tarea>
+  agregarTarea(tarea) : void
+}
+Proyecto --> "*" Tarea
+abstract class Tarea {
+  nombre : String
+  descripcion : String
+  estado : EstadoTarea
+  getEstado() : EstadoTarea
+}
+
+class Historia {
+  estimacion : Int
+  persona : Persona
+  imagen : String
+  periodo : Periodo
+  iteracion : Iteracion
+}
+class Fallo {
+  estimacion : Int
+  persona : Persona
+  imagen : String
+  periodo : Periodo
+  iteracion : Iteracion
+}
+class Epica {
+  estimacion : Int
+  persona : Persona
+  periodo : Periodo
+  tareas : List<Tarea>
+  agregarTarea(tarea) : void
+}
+' A su vez, las Épicas engloban Historias y Fallos en unidades conceptuales (?)
+
+Historia <-- Iteracion
+Fallo <-- Iteracion
+
+class Iteracion {
+  fechaInicio : Date
+  fechaFin : Date
+}
+enum EstadoTarea {
+  PENDIENTE,
+  POR_HACER,
+  EN_PROGRESO,
+  TERMINADA,
+}
+
+Historia -up-|> Tarea
+Fallo -up-|> Tarea
+Epica -up-|> Tarea
+Tarea -left-> EstadoTarea
+
+interface Notifier {
+  notify(email, message) : void
+}
+
+class NotifierAdapter {
+  notify(email, message) : void
+}
+
+class Persona {
+  tareas : List<Tarea>
+  asignarTarea(tarea) : void
+  notificarAsignacionDeTarea(tarea) : void
+}
+' notificarAsignacionDeTarea se ejecutaria dentro de asignarTarea
+NotifierAdapter --> Notifier
+Persona --> NotifierAdapter
+Persona --> "*" Tarea
+@enduml

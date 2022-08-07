@@ -6,10 +6,15 @@ public class Vehiculo {
   public List<MedioDeComunicacion> mediosDeComunicacion = new ArrayList<MedioDeComunicacion>();
   private Posicion posicion;
   private EstadoVehiculo estado;
+  private Solicitud solicitudPendiente;
 
   public Vehiculo(Posicion posicion) {
     this.posicion = posicion;
     this.estado = EstadoVehiculo.LIBRE;
+  }
+
+  public Posicion getPosicion() {
+    return posicion;
   }
 
   public void notificar() {
@@ -29,16 +34,23 @@ public class Vehiculo {
     return this.posicion.esPosicionCercana(solicitud.getPosicion());
   }
 
-  public void liberarVehiculo(){
-    this.estado = EstadoVehiculo.LIBRE;
+  public boolean estaDisponible() {
+    return this.estado == EstadoVehiculo.LIBRE;
   }
-  public void ocuparVehiculo(){
+
+  public void liberarVehiculo() {
+    this.estado = EstadoVehiculo.LIBRE;
+    this.solicitudPendiente = null;
+  }
+
+  public void ocuparVehiculo(Solicitud solicitud) {
     this.estado = EstadoVehiculo.OCUPADO;
+    this.solicitudPendiente = solicitud;
     notificar();
   }
-  
-  public int distanciaA(Posicion posicion){
-    // TODO: A implementar cuando se sepa el la implementaciÃ³n de posicion
+
+  public int distanciaA(Posicion posicion) {
+    // TODO: A implementar cuando se sepa el la implementación de posicion
     // mientras tanto deberia mockearse
     return 0;
   }
@@ -67,7 +79,7 @@ public class Pasajero {
   public boolean esMismoPasajero(Pasajero pasajero) {
     return this.getNombre() == pasajero.getNombre();
     // No es buena practica matchear con el nombre
-    // Pero con el diseï¿½o pedido no nos queda de otra
+    // Pero con el diseño pedido no nos queda de otra
   }
 }
 
@@ -97,31 +109,71 @@ public class Pasajeros {
 public class Flota {
   public List<Vehiculo> vehiculos = new ArrayList<>();
   private static final Flota INSTANCE = new Flota();
+  private static CalculadoraDeDistancia calculadoraDeDistancia = new CalculadoraDeDistancia();
 
   public static Flota getInstance() {
     return INSTANCE;
   }
 
-  public Vehiculo hayarVehiculoCercaDeSolicitud(Solicitud solicitud) {
-    return vehiculos.stream().filter(v -> v.estaCercaDe(solicitud)).findFirst().get();
+  public Vehiculo hayarVehiculoDisponibleMasCercaDeSolicitud(Solicitud solicitud) {
+    return vehiculos.stream()
+        .filter(v -> v.estaDisponible())
+        .orderBy(v1, v2 -> v1.distanciaA(solicitud) <= v2.distanciaA(solicitud))
+        .findFirst()
+        .get();
   }
 
-  public boolean existeVehiculoCercaDeSolicitud(Solicitud solicitud) {
-    return this.hayarVehiculoCercaDeSolicitud(solicitud) != null;
+  public boolean existeVehiculoDisponibleCercaDeSolicitud(Solicitud solicitud) {
+    return this.hayarVehiculoDisponibleMasCercaDeSolicitud(solicitud) != null;
   }
 
   // TODO: Ejecutar con tarea programada segun lo pedido en consigna
   public Vehiculo conseguirVehiculoDisponibleCercano(Solicitud solicitud) {
-    if (existeVehiculoCercaDeSolicitud(solicitud)) {
-      solicitud.aceptarSolicitud();
-      Vehiculo vehiculoHayado = hayarVehiculoCercaDeSolicitud(solicitud);
-      vehiculoHayado.ocuparVehiculo();
+    if (existeVehiculoDisponibleCercaDeSolicitud(solicitud)) {
+      Vehiculo vehiculoHayado = hayarVehiculoDisponibleMasCercaDeSolicitud(solicitud);
+      if (solicitud.getVehiculoAsignado() == null) {
+        vehiculoHayado.ocuparVehiculo(solicitud);
+        solicitud.setVehiculo(vehiculoHayado);
+      } else if (vehiculoEstaMasCercaDeSolicitudQueActual(solicitud, vehiculoHayado)) {
+        vehiculoHayado.ocuparVehiculo(solicitud);
+        solicitud.cambiarVehiculoPor(vehiculoHayado);
+      }
+      solicitud.aceptarSolicitud(vehiculoHayado);
       return vehiculoHayado;
     } else {
       solicitud.rechazarSolicitud();
       return null;
     }
   }
+
+  public boolean vehiculoEstaMasCercaDeSolicitudQueActual(Vehiculo v1, Solicitud solicitud){
+    return calculadoraDeDistancia.getDistanciaEntrePosiciones(solicitud.getPosicion(), solicitud.getVehiculoAsignado().getPosicion())
+         < calculadoraDeDistancia.getDistanciaEntrePosiciones(solicitud.getPosicion(), v1.getPosicion());
+  }
+
+  public Vehiculo conseguirVehiculoMasCercano(Solicitud solicitud) {
+    if (existeVehiculoDisponibleCercaDeSolicitud(solicitud)) {
+      Vehiculo vehiculoHayado = hayarVehiculoDisponibleMasCercaDeSolicitud(solicitud);
+      solicitud.cambiarVehiculoPor(vehiculoHayado);
+      return vehiculoHayado;
+    }
+  }
+
+  public Vehiculo hayarVehiculoDisponibleMasCercaDeSolicitud(Solicitud solicitud) {
+    return vehiculos
+        .stream()
+        .filter(
+            v -> calculadoraDeDistancia.getDistanciaEntrePosiciones(v.getPosicion(),
+                solicitud.getPosicion()) < calculadoraDeDistancia.getDistanciaEntrePosiciones(
+                    solicitud.getVehiculoAsignado().getPosicion(), solicitud.getPosicion()))
+        .findFirst()
+        .get();
+  }
+
+  public Boolean existeVehiculoMasCercano(Solicitud solicitud) {
+    return this.hayarVehiculoDisponibleMasCercaDeSolicitud(solicitud) != null;
+  }
+
 }
 
 enum EstadoVehiculo {
@@ -130,11 +182,17 @@ enum EstadoVehiculo {
 }
 
 public class Posicion {
+  CalculadoraDeDistancia calculadoraDeDistancia = new CalculadoraDeDistancia();
+
   // No importa como funciona
   public boolean esPosicionCercana(Posicion pos) {
+    final double DISTANCIA_CERCANA = 100;
+    // Supongo una distancia cercana cualquiera, que debe ser modificada cuando se
+    // implemente
+    // y segun los requerimientos que no estan especificados
     // TODO: completar cuando se sepa el funcionamiento, mientras tanto se podria
     // mockear
-    return true;
+    return calculadoraDeDistancia.getDistanciaEntrePosiciones(this, pos) < DISTANCIA_CERCANA;
   }
 }
 
@@ -142,6 +200,7 @@ public class Solicitud {
   public LocalDateTime hora;
   public Posicion posicion;
   public EstadoSolicitud estado = EstadoSolicitud.PENDIENTE;
+  public Vehiculo vehiculoAsignado;
 
   public LocalDateTime getHora() {
     return hora;
@@ -155,12 +214,26 @@ public class Solicitud {
     return estado;
   }
 
+  public Vehiculo getVehiculoAsignado() {
+    return vehiculoAsignado;
+  }
+
   public void rechazarSolicitud() {
     estado = EstadoSolicitud.RECHAZADO;
   }
 
-  public void aceptarSolicitud() {
+  public void aceptarSolicitud(Vehiculo unVehiculo) {
     estado = EstadoSolicitud.ACEPTADO;
+    setVehiculo(unVehiculo);
+  }
+
+  public void setVehiculo(Vehiculo vehiculo) {
+    vehiculoAsignado = vehiculo;
+  }
+
+  public void cambiarVehiculoPor(Vehiculo vehiculo) {
+    this.vehiculoAsignado.liberarVehiculo();
+    setVehiculo(vehiculo);
   }
 }
 
@@ -190,3 +263,10 @@ public class Web implements MedioDeComunicacion {
   }
 }
 // -------------------------------------
+
+public class CalculadoraDeDistancia {
+  public double getDistanciaEntrePosiciones(Posicion p1, Posicion p2) {
+    // TODO: Implementar cuando se sepa como funciona. Se puede mockear para testear
+    return 0;
+  }
+}

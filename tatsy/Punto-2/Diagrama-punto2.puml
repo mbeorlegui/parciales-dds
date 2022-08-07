@@ -21,12 +21,15 @@ class Solicitud {
   hora : LocalDateTime
   posicion : Posicion
   estado : EstadoSolicitud
+  cambiarVehiculoPor(Vehiculo) : void
+  aceptarSolicitud() : void
+  rechazarSolicitud() : void
 }
 
 class Flota <<(S,#FF7700) Singleton>> {
   vehiculos : List<Vehiculo>
 }
-' Creo que flota deberia ser un singleton, porque es �nica en el sistema
+' Creo que flota deberia ser un singleton, porque es ï¿½nica en el sistema
 ' Alli estan contenidos todos los vehiculos
 Flota -->"*" Vehiculo
 
@@ -47,6 +50,7 @@ Vehiculo --> EstadoVehiculo
 enum EstadoVehiculo {
   OCUPADO,
   LIBRE,
+  PENDIENTE,
 }
 
 interface MedioDeComunicacion {
@@ -73,6 +77,12 @@ Posicion --> Solicitud
 
 Vehiculo --> MedioDeComunicacion
 
+class CalculadoraDeDistancia {
+  getDistanciaEntrePosiciones(p1, p2) : Double
+}
+
+CalculadoraDeDistancia --> Posicion
+Flota --> CalculadoraDeDistancia
 
 
 @enduml

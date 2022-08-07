@@ -29,6 +29,7 @@ class Flota <<(S,#FF7700) Singleton>> {
 ' Creo que flota deberia ser un singleton, porque es única en el sistema
 ' Alli estan contenidos todos los vehiculos
 Flota -->"*" Vehiculo
+Flota --> Flota
 
 class Vehiculo {
   posicion : Posicion
@@ -40,6 +41,7 @@ Solicitud --> EstadoSolicitud
 enum EstadoSolicitud {
   ACEPTADO,
   RECHAZADO,
+  PENDIENTE,
 }
 
 Vehiculo --> EstadoVehiculo

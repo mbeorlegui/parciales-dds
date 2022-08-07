@@ -107,7 +107,8 @@ public class Flota {
 
   public Vehiculo hayarVehiculoDisponibleCercaDeSolicitud(Solicitud solicitud) {
     return vehiculos.stream()
-      .filter(v -> v.estaCercaDe(solicitud) && v.estaDisponible())
+      .filter(v -> v.estaDisponible())
+      .orderBy(v1, v2 -> v1.distanciaA(solicitud) < v2.distanciaA(solicitud))
       .findFirst()
       .get();
   }
@@ -124,7 +125,9 @@ public class Flota {
       vehiculoHayado.ocuparVehiculo(solicitud);
       return vehiculoHayado;
     } else {
-      solicitud.rechazarSolicitud();
+      if (solicitud.getHora() == now){
+        solicitud.rechazarSolicitud();
+      }
       return null;
     }
   }
