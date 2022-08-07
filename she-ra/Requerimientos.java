@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -50,20 +51,31 @@ public abstract class Tarea {
 
 public class Historia extends Tarea {
   public String linkImagen;
+  public Integer estimacion;
 
   public Historia(String nombre, String descripcion, String linkImagen) {
     super(nombre, descripcion);
     this.linkImagen = linkImagen;
   }
 
+  public void setPorHacer(){
+    Objects.requireNonNull(estimacion, "La estimacion debe ser definitiva para pasar a por hacer");
+    estado = EstadoTarea.POR_HACER;
+  }
 }
 
 public class Fallo extends Tarea {
   public String linkImagen;
+  public Integer estimacion;
 
   public Fallo(String nombre, String descripcion, String linkImagen) {
     super(nombre, descripcion);
     this.linkImagen = linkImagen;
+  }
+
+  public void setPorHacer(){
+    Objects.requireNonNull(estimacion, "La estimacion debe ser definitiva para pasar a por hacer");
+    estado = EstadoTarea.POR_HACER;
   }
 }
 
@@ -104,6 +116,10 @@ public class Iteracion {
     tarea.validarTarea();
     tareas.add(tarea);
   }
+
+  public List<Tarea> getTareas() {
+    return tareas;
+  }
 }
 
 public class NotifierAdapter {
@@ -119,6 +135,7 @@ public class Persona {
   public NotifierAdapter notifier = new NotifierAdapter();
 
   public void asignarTarea(Tarea tarea) {
+    tarea.validarTarea();
     tareas.add(tarea);
     notifier.notificarAsignacionDeTarea(email, tarea);
   }
@@ -147,13 +164,21 @@ public static void main(String[] args) {
   Date otroDate = new Date();
   Iteracion unaIteracion = new Iteracion(unDate, otroDate);
 
-
+  // 6. Asignar tarea a iteracion
   unaIteracion.agregarTarea(unaHistoria);
   unaIteracion.agregarTarea(unFallo);
 
+  // 7. Ver tareas planeadas para iteracion
+  unaIteracion.getTareas();
 
-  // 9.
-  unFallo.getEstado();
+  // 8. Ver estado de cada tarea
+  unaHistoria.getEstado();
   unFallo.getEstado();
   unaEpica.getEstado();
+
+  // 9. Asignar tarea a Persona
+  Persona unaPersona = new Persona();
+  unaPersona.asignarTarea(unaHistoria);  // Punto 10. dentro de metodo asignarTarea
+
+  
 }
