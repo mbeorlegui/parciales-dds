@@ -6,6 +6,7 @@ class Proyecto {
   agregarTarea(tarea) : void
 }
 Proyecto --> "*" Tarea
+
 abstract class Tarea {
   nombre : String
   descripcion : String
@@ -13,22 +14,15 @@ abstract class Tarea {
   getEstado() : EstadoTarea
 }
 
-class Historia {
-  estimacion : Int
-  persona : Persona
+abstract class HistoriaOFallo {
+  estimacion : Estimacion
   imagen : String
   periodo : Periodo
-  iteracion : Iteracion
 }
-class Fallo {
-  estimacion : Int
-  persona : Persona
-  imagen : String
-  periodo : Periodo
-  iteracion : Iteracion
-}
+class Historia
+class Fallo
+
 class Epica {
-  estimacion : Int
   persona : Persona
   periodo : Periodo
   tareas : List<Tarea>
@@ -36,8 +30,7 @@ class Epica {
 }
 ' A su vez, las Épicas engloban Historias y Fallos en unidades conceptuales (?)
 
-Historia <-- Iteracion
-Fallo <-- Iteracion
+HistoriaOFallo <-- Iteracion
 
 class Iteracion {
   fechaInicio : Date
@@ -50,10 +43,12 @@ enum EstadoTarea {
   TERMINADA,
 }
 
-Historia -up-|> Tarea
-Fallo -up-|> Tarea
+HistoriaOFallo -up-|> Tarea
+Historia -up-|> HistoriaOFallo
+Fallo -up-|> HistoriaOFallo
 Epica -up-|> Tarea
-Tarea -left-> EstadoTarea
+Epica --> "*" Tarea
+HistoriaOFallo -up-> EstadoTarea
 
 interface Notifier {
   notify(email, message) : void
@@ -64,12 +59,27 @@ class NotifierAdapter {
 }
 
 class Persona {
-  tareas : List<Tarea>
+  tareas : List<HistoriaOFallo>
   asignarTarea(tarea) : void
   notificarAsignacionDeTarea(tarea) : void
 }
 ' notificarAsignacionDeTarea se ejecutaria dentro de asignarTarea
 NotifierAdapter --> Notifier
 Persona --> NotifierAdapter
-Persona --> "*" Tarea
+Persona --> "*" HistoriaOFallo
+
+abstract class Estimacion {
+  cantidadEstimada : Int
+}
+class EstimacionDefinitiva {
+  cantidadEstimada : Int
+}
+class EstimacionTentantiva {
+  cantidadEstimada : Int
+}
+
+HistoriaOFallo --> Estimacion
+EstimacionDefinitiva -up-|> Estimacion
+EstimacionTentantiva -up-|> Estimacion
+
 @enduml

@@ -1,5 +1,8 @@
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -32,7 +35,7 @@ public enum EstadoTarea {
 public abstract class Tarea {
   public String nombre;
   public String descripcion;
-  public EstadoTarea estado;
+  public EstadoTarea estado = EstadoTarea.PENDIENTE;
   public Iteracion iteracion;
 
   public Tarea(String nombre, String descripcion) {
@@ -44,38 +47,63 @@ public abstract class Tarea {
     return estado;
   }
 
-  public void validarTarea() {
+  public String getNombre() {
+    return nombre;
+  }
 
+}
+
+public abstract class HistoriaOFallo extends Tarea {
+  public String linkImagen;
+  public Estimacion estimacion;
+  public Date pendienteDesde = LocalDateTime.now();
+
+  public HistoriaOFallo(String nombre, String descripcion, String linkImagen) {
+    super(nombre, descripcion);
+    this.linkImagen = linkImagen;
+  }
+
+  public void setPorHacer() {
+    estimacion.validarCambioDeEstado();
+    estado = EstadoTarea.POR_HACER;
+  }
+
+  public void getHistoriasYFallos() {
+    return Collections.singletonList(this); // Se devuelve a si mismo como una lista
+  }
+
+  public void setEstimacion(EstimacionTentativa unaEstimacion) {
+    estimacion = unaEstimacion;
+  }
+
+  public void rechazarEstimacion() { // Solamente si es tentativa
+    estimacion.validarRechazo();
+    estimacion = null;
+  }
+
+  public void aceptarEstimacion() { // Solamente si es tentativa
+    estimacion.validarAceptacion();
+    estimacion = new EstimacionDefinitiva(estimacion.getCantidadEstimada());
+  }
+
+  public void validarTiempoEnEstadoPendiente() {
+    Integer DAYS_TO_CHANGE = 30;
+    if (LocalDateTime.delta(LocalDateTime.now(), this.pendienteDesde) < DAYS_TO_CHANGE) {
+      estimacion.validarAceptacion();
+      estado = EstadoTarea.POR_HACER;
+    }
   }
 }
 
-public class Historia extends Tarea {
-  public String linkImagen;
-  public Integer estimacion;
-
+public class Historia extends HistoriaOFallo {
   public Historia(String nombre, String descripcion, String linkImagen) {
-    super(nombre, descripcion);
-    this.linkImagen = linkImagen;
-  }
-
-  public void setPorHacer(){
-    Objects.requireNonNull(estimacion, "La estimacion debe ser definitiva para pasar a por hacer");
-    estado = EstadoTarea.POR_HACER;
+    super(nombre, descripcion, linkImagen);
   }
 }
 
-public class Fallo extends Tarea {
-  public String linkImagen;
-  public Integer estimacion;
-
+public class Fallo extends HistoriaOFallo {
   public Fallo(String nombre, String descripcion, String linkImagen) {
-    super(nombre, descripcion);
-    this.linkImagen = linkImagen;
-  }
-
-  public void setPorHacer(){
-    Objects.requireNonNull(estimacion, "La estimacion debe ser definitiva para pasar a por hacer");
-    estado = EstadoTarea.POR_HACER;
+    super(nombre, descripcion, linkImagen);
   }
 }
 
@@ -90,16 +118,11 @@ public class Epica extends Tarea {
     tareas.add(tarea);
   }
 
-  public List<Tarea> getTareasPlanas() {
-    return null;
-    // TODO
+  public List<Tarea> getHistoriasYFallos() {
+    return tareas
+        .stream()
+        .flatMap(t -> t.getHistoriasYFallos());
   }
-
-  @Override
-  public void validarTarea() {
-    throw new RuntimeException("No puede ejecutarse esta accion para una Tarea Epica");
-  }
-
 }
 
 public class Iteracion {
@@ -113,7 +136,6 @@ public class Iteracion {
   }
 
   public void agregarTarea(Tarea tarea) {
-    tarea.validarTarea();
     tareas.add(tarea);
   }
 
@@ -123,23 +145,75 @@ public class Iteracion {
 }
 
 public class NotifierAdapter {
-  public void notificarAsignacionDeTarea(String email, Tarea tarea) {
-    // TODO
+  Notifier notificador;
+
+  public void notificarAsignacionDeTarea(String email, HistoriaOFallo tarea) {
+    final String mensaje = "Se le ha asignado la tarea " + tarea.getNombre();
+    notificador.notify(email, mensaje);
   }
 }
 
 public class Persona {
   public String name;
   public String email;
-  public List<Tarea> tareas = new ArrayList<Tarea>();
+  public List<HistoriaOFallo> tareas = new ArrayList<HistoriaOFallo>();
   public NotifierAdapter notifier = new NotifierAdapter();
 
-  public void asignarTarea(Tarea tarea) {
-    tarea.validarTarea();
+  public void asignarTarea(HistoriaOFallo tarea) {
     tareas.add(tarea);
-    notifier.notificarAsignacionDeTarea(email, tarea);
+    notifier.notificarAsignacionDeTarea(this.email, tarea);
+  }
+}
+
+public abstract class Estimacion {
+  public Integer cantidadEstimada;
+
+  public Estimacion(Integer cantidadEstimada) {
+    this.cantidadEstimada = cantidadEstimada;
   }
 
+  public Integer getCantidadEstimada() {
+    return cantidadEstimada;
+  }
+
+  public void validarCambioDeEstado() {
+
+  }
+
+  public void validarRechazo() {
+
+  }
+
+  public void validarAceptacion() {
+
+  }
+}
+
+public class EstimacionDefinitiva extends Estimacion {
+  public EstimacionDefinitiva(Integer cantidadEstimada) {
+    super(cantidadEstimada);
+  }
+
+  @Override
+  public void validarRechazo() {
+    throw new RuntimeException("No puede rechazarse una Estimacion Definitiva");
+  }
+
+  @Override
+  public void validarAceptacion() {
+    throw new RuntimeException("No puede aceptarse una Estimacion Definitiva");
+  }
+}
+
+public class EstimacionTentativa extends Estimacion {
+  public EstimacionTentativa(Integer cantidadEstimada) {
+    super(cantidadEstimada);
+  }
+
+  @Override
+  public void validarCambioDeEstado() {
+    throw new RuntimeException("No puede cambiarse el estado de una Estimacion Tentativa");
+  }
 }
 
 public static void main(String[] args) {
@@ -157,7 +231,7 @@ public static void main(String[] args) {
   unaEpica.agregarTarea(unaHistoria);
 
   // 4. Para ver el listado de tareas en una epica
-  unaEpica.getTareasPlanas();
+  unaEpica.getHistoriasYFallos();
 
   // 5. Crear iteracion
   Date unDate = new Date();
@@ -179,6 +253,5 @@ public static void main(String[] args) {
   // 9. Asignar tarea a Persona
   Persona unaPersona = new Persona();
   unaPersona.asignarTarea(unaHistoria);  // Punto 10. dentro de metodo asignarTarea
-
   
 }
