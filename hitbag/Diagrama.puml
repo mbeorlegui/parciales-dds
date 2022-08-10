@@ -2,15 +2,18 @@
 
 class Usuario {
   bags : List<Bag>
-  ejecutarSobre(Bag, Contenido) : void
 }
 
-Usuario --> "*" Bag
+Bag -right-> "colaboradores *" Usuario
+Bag -right-> "duenio" Usuario
 Bag --> "*" Contenido
 
 class Bag {
-  contenido : List<Contenido>
-  ejecutarSobre(Contenido) : void
+  modificar(hit) : void
+  volverAlPunto(hit) : void
+  realizarHitRequest(hit) : void
+  aceptarHitRequest(hit) : void
+  rechazarHitRequest(hit) : void
   reemplazarContenido(Contenido, Contenido) : void
   getContenidosMultimedia() : List<Contenido>
 }
@@ -54,27 +57,39 @@ Video .up.|> ContenidoMultimedia
 Texto .up.|> Contenido
 Cancion .up.|> ContenidoMultimedia
 
-Bag -left-> "*" Hit
+class Hit {
+  acciones : List<AccionHit>
+  contenido : Contenido
+  ejecutarSobre(bag) : void
+  deshacerSobre(bag) : void
+}
+
+Bag -down-> "hitRequests *" Hit
+Bag -down-> "hits *" Hit
 Hit -down-> "*" AccionHit
 ' Hit es un conjunto de acciones, por lo tanto es una lista de Acciones Hit
 ' Entonces podemos usar el patron Command, de forma tal que una lista de acciones
 ' se pueda aplicar mapeando una lista con el metodo ejecutarSobre(bag)
 interface AccionHit {
-  ejecutarSobre(bag) : void
+  ejecutarSobre(bag)
+  deshacerSobre(bag)
 }
 
 class CambiarNombre {
   viejoNombre : String
   nuevoNombre : String
-  ejecutarSobre(bag) : void
+  ejecutarSobre(bag)
+  deshacerSobre(bag)
 }
 class AgregarContenido {
   contenido : Contenido
-  ejecutarSobre(bag) : void
+  ejecutarSobre(bag)
+  deshacerSobre(bag)
 }
 class QuitarContenido {
   contenido : Contenido
-  ejecutarSobre(bag) : void
+  ejecutarSobre(bag)
+  deshacerSobre(bag)
 }
 
 CambiarNombre .up.|> AccionHit
