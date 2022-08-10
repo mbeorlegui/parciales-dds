@@ -68,7 +68,7 @@ public abstract class HistoriaOFallo extends Tarea {
     estado = EstadoTarea.POR_HACER;
   }
 
-  public void getHistoriasYFallos() {
+  public List<Tarea> getHistoriasYFallos() {
     return Collections.singletonList(this); // Se devuelve a si mismo como una lista
   }
 
@@ -119,9 +119,8 @@ public class Epica extends Tarea {
   }
 
   public List<Tarea> getHistoriasYFallos() {
-    return tareas
-        .stream()
-        .flatMap(t -> t.getHistoriasYFallos());
+    // return tareas.stream().flatMap(t -> t.getHistoriasYFallos().stream());
+    return null;
   }
 }
 
@@ -214,6 +213,7 @@ public class EstimacionTentativa extends Estimacion {
   public void validarCambioDeEstado() {
     throw new RuntimeException("No puede cambiarse el estado de una Estimacion Tentativa");
   }
+
 }
 
 public static void main(String[] args) {
