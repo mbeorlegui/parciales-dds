@@ -10,4 +10,3 @@ Mapeos:
 - La relacion entre Playlist y Suscriptores es `@ManyToMany`, pues los suscriptores (que son usuarios) pueden tener mas de una Playlist.
 - La relacion entre Playlist y Duenio es `@ManyToOne`, pues los dueño (que son usuarios) pueden ser dueños de más de una Playlist.
 - La relacion entre Playlist y los contenidos es `@ManyToMany`, pues una Playlist tiene muchos contenidos, y muchos contenidos pueden pertenecer a varias Playlists.
-- 
