@@ -35,6 +35,7 @@ class RepositorioFabricantes {
 }
 
 @Inheritance(SINGLE_TABLE)
+@Entity
 abstract class Orden extends PersistentEntity {
   int copias;
   @Embedded
@@ -43,6 +44,7 @@ abstract class Orden extends PersistentEntity {
   ModalidadDeEntrega modalidadDeEntrega;
 }
 
+@Entity
 class Personalidada extends Orden {
   String secuenciaMidi;
   @Lob
@@ -54,18 +56,22 @@ class Personalidada extends Orden {
 }
 
 @Inheritance(SINGLE_TABLE)
+@Entity
 abstract class ModalidadDeEntrega extends PersistentEntity {
 
 }
 
+@Entity
 class CorreoArgentino extends ModalidadDeEntrega {
 
 }
 
+@Entity
 class ACargoDeFabricante extends ModalidadDeEntrega {
 
 }
 
+@Entity
 class DeCatalogo extends Orden {
   @Embedded
   Melodia melodia;
