@@ -37,9 +37,11 @@ entity UbicacionPersonaje {
   ' ubicacionesVisitadas
 }
 
-entity Items_Single_Table {
+entity Items {
   id : int <<PK>>
   --
+  ' Todas las propiedades de Item estan en esta tabla
+  ' Ya que uso Single Table
   ubicacion_id : int <<FK>>
   personaje_id : int <<FK>>
   fraseMotivacional : String
@@ -50,11 +52,11 @@ entity Items_Single_Table {
   ataque : int
 }
 
-Personaje --|| Items_Single_Table
-Personaje --{ Items_Single_Table
+Personaje --|| Items
+Personaje --{ Items
 Personaje --|| Ubicacion
 Personaje -left-{ UbicacionPersonaje
 Ubicacion -left-{ UbicacionPersonaje
-Ubicacion --{ Items_Single_Table
+Ubicacion --{ Items
 
 @enduml

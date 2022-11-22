@@ -11,6 +11,7 @@ class Cliente extends PersistentEntity {
   Direccion direccion;
   String nombre;
   String apellido;
+  @OneToMany
   List<Orden> ordenes;
 }
 
@@ -22,7 +23,10 @@ class Direccion extends PersistentEntity {
 }
 
 class Fabricante extends PersistentEntity {
-
+  Bool aceptaTrabajo;
+  int copiasMinimas;
+  int diasDeDemora;
+  int capacidadDisponible;
 }
 
 @Service
@@ -35,6 +39,8 @@ abstract class Orden extends PersistentEntity {
   int copias;
   @Embedded
   Direccion direccion;
+  @ManyToOne
+  ModalidadDeEntrega modalidadDeEntrega;
 }
 
 class Personalidada extends Orden {
@@ -42,7 +48,7 @@ class Personalidada extends Orden {
   @Lob
   byte[] secuenciaDeAudio;
 
-  public void convertir(){
+  public void convertir() {
     // Usa un singleton
   }
 }
@@ -53,11 +59,11 @@ abstract class ModalidadDeEntrega extends PersistentEntity {
 }
 
 class CorreoArgentino extends ModalidadDeEntrega {
-  
+
 }
 
 class ACargoDeFabricante extends ModalidadDeEntrega {
-  
+
 }
 
 class DeCatalogo extends Orden {

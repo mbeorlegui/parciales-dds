@@ -1,7 +1,7 @@
 ﻿@startuml DER-notesbox
 
 entity Cliente {
-  id : Long <<PK>>
+  id : int <<PK>>
   --
   calle : String
   codigoPostal : String
@@ -11,16 +11,22 @@ entity Cliente {
 }
 
 entity Fabricante {
-  id : Long <<PK>>g
+  id : int <<PK>>
   --
+  aceptaTrabajo : int
+  copiasMinimas : int
+  diasDeDemora : int
+  capacidadDisponible : int
 }
 
 entity Orden {
-  id : Long <<PK>>
+  id : int <<PK>>
   --
   ' Dejo esta tabla sola ya que uso SingleTable
   cliente_id : int <<FK>>
   estado_id : int <<FK>>
+  modalidad_de_entrega_id : int <<FK>>
+  fabricante_id : int <<FK>>
   copias : int
   calle : String
   codigoPostal : String
@@ -32,16 +38,16 @@ entity Orden {
 }
 
 entity ModalidadDeEntrega {
-  id : Long <<PK>>
+  id : int <<PK>>
   --
   ' Dejo esta tabla sola ya que uso SingleTable
   NuevosAtributos : type
 }
 
 
-Cliente --{ Orden
+Cliente ||--{ Orden
 Orden }--|| Fabricante
-Orden --|| ModalidadDeEntrega
+Orden }--|| ModalidadDeEntrega
 
 
 
