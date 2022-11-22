@@ -10,7 +10,6 @@ entity Playlist {
 entity Contenido {
   id : int <<PK>>
   --
-  order : int
   likes : int
   dislikes : int
   fechaInicio : Date
@@ -31,6 +30,7 @@ entity Contenido_x_Playlist {
   contenido_id : int <<PK/FK>>
   playlist_id : int <<PK/FK>>
   --
+  orden : int
 }
 
 entity Usuario {

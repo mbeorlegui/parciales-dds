@@ -46,7 +46,8 @@ public class Playlist {
   @ManyToMany
   List<Usuario> suscriptores;
   @ManyToMany
-  @OrderColumn
+  @OrderColumn(orden)
+  // Agrega columna de orden a tabla intermedia
   List<Contenido> contenidos;
 }
 
