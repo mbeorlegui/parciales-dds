@@ -1,4 +1,4 @@
-﻿@startuml DER
+﻿@startuml DER-notesbox
 
 entity Cliente {
   id : Long <<PK>>
@@ -11,7 +11,7 @@ entity Cliente {
 }
 
 entity Fabricante {
-  id : Long <<PK>>
+  id : Long <<PK>>g
   --
 }
 
