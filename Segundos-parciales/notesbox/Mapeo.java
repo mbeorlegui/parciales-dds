@@ -42,6 +42,8 @@ abstract class Orden extends PersistentEntity {
   Direccion direccion;
   @ManyToOne
   ModalidadDeEntrega modalidadDeEntrega;
+  @Enumerated
+  Estado estado;
 }
 
 @Entity
@@ -85,7 +87,6 @@ class Melodia {
   byte[] imagenDePortada;
 }
 
-@Enumerated
 enum Estado {
   // ...
 }

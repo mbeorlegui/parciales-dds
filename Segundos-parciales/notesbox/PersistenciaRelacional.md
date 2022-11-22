@@ -3,7 +3,7 @@
 
 Mapeos:
 - Utilizo el MappedSuperclass para no repetir los IDs 
-- Para guardar el enum de estado, lo embebo en Orden utilizando `@Enumerated`, ya que lo unico qu enecesito es el valor del mismo, el cual sera un ID. O sea, se agrega la columna estado_id a la tabla de Orden.
+- Para guardar el enum de estado, lo embebo en Orden utilizando `@Enumerated`, ya que lo unico que necesito es el valor del mismo, el cual sera un ID. O sea, se agrega la columna estado_id a la tabla de Orden.
 - Direccion es un `Embeddable`, ya que es un value object, porque no me interesa la entidad en si, si no los valores que tiene la misma. De esta forma, se agregan las columnas calle, codigoPostal y ciudad a las tablas de Clientes y Ordenes.
 - Los repositorios siempre son servicios, por lo que no debo persistirlos, ya que ellos solo se encargan de interactuar con la base. En el caso de RepositorioFabricantes, es el encargado de interactuar con la tabla Fabricantes. Debido a esto, utilizo `@Service`.
 - El MIDIConverter es Singleton, por lo que no debe persistirse, no tiene sentido hacerlo.

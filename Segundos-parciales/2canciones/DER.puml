@@ -1,0 +1,39 @@
+﻿@startuml DER-2canciones
+
+entity Playlist {
+  id : int <<PK>>
+  --
+  visibilidad_id : int <<FK>>
+  contenido_id : int <<FK>>
+}
+
+entity Contenido {
+  id : int <<PK>>
+  --
+  id_playlist : int <<FK>>
+  order : int
+  likes : int
+  dislikes : int
+  fechaInicio : Date
+  fechaFin : Date
+  fechaSubida : Date
+  duracion : Time
+  ' embebo estadistica
+  ' Dejo todas aca, porque uso SintleTable
+}
+
+
+entity Usuario {
+  id : int <<PK>>
+  --
+  id_playlist : int <<FK>>
+  nombre : String
+}
+
+
+Playlist --{ Usuario
+Playlist --|{ Contenido
+Playlist --|| Usuario
+Contenido --|| Usuario
+
+@enduml
