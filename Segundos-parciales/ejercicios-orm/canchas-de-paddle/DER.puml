@@ -1,0 +1,80 @@
+﻿@startuml DER
+
+hide circle
+skinparam linetype ortho
+
+entity canchas {
+  id_cancha : int <<auto_increment>>
+  --
+  nombre : string
+  codigo_de_color : int
+  tiene_iluminacion : int
+}
+
+entity partidos {
+  id_partido : int <<auto_increment>>
+  --
+  id_cancha : int <<FK>>
+  codigo_color : int <<FK>>
+  ' Si se llega a cambiar el color, necesito saber cual es
+  inicio_del_partido : datetime
+  fin_del_partido : datetime
+}
+
+entity jugadores {
+  id_jugador : int <<auto_increment>>
+  --
+  nombre : string
+  domicilio : string
+  fecha_nac : datetime
+  id_paleta : int <<FK>>
+}
+
+entity paletas {
+  id_paleta : int <<auto_increment>>
+  --
+  grosor : int
+  nombre : string
+  codigo_color : int <<FK>>
+  id_fabricante : int <<FK>>
+}
+
+entity fabricantes {
+  id_fabricante : int <<auto_increment>>
+  --
+  domicilio : string
+}
+
+entity colores {
+  codigo_color : int <<auto_increment>>
+  --
+  descripcion : string
+}
+
+
+entity jugadores_x_partidos {
+  id_jugador : int <<auto_increment>>
+  id_partido : int <<auto_increment>>
+  --
+  id_paleta : int <<FK>>
+  ' Esto es porque necesito la paleta que uso cada jugador
+  ' en cada partido
+}
+
+canchas --{ partidos
+canchas --|| colores
+partidos --|| colores
+partidos --{ jugadores_x_partidos
+jugadores --{ jugadores_x_partidos
+paletas --{ jugadores_x_partidos
+paletas --|| colores
+paletas -up-|| fabricantes
+paletas ||-- jugadores
+
+' La restriccion de dominio 2 o 4 jugadores es algo de lo 
+' que se tiene que encargar la aplicacion.
+' Se podria implementar un trigger para realizar esta validacion, pero
+' no puede expresarse con el DER simplemente 
+' Lo mismo para varias de las otras restricciones
+
+@enduml

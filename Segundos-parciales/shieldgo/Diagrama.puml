@@ -1,0 +1,60 @@
+﻿@startuml DER
+
+hide circle
+
+
+entity Personaje {
+  id : int <<PK>>
+  --
+  arma_id <<FK>>
+  nombre : String
+  monedas : int
+  x : int
+  y : int
+  nivel : int
+  tipoPersonaje : int
+}
+
+
+
+entity Ubicacion {
+  id : int <<PK>>
+  --
+  id_item : int <<FK>>
+  nombre : String
+  x : int
+  y : int
+  nivel : int
+}
+
+entity UbicacionPersonaje {
+  id_ubicacion : int <<PK/FK>>
+  id_personaje : int <<PK/FK>>
+  --
+  order : int
+  ' order porque aplico OrderColumn
+  ' Pertenecienta a la lista
+  ' ubicacionesVisitadas
+}
+
+entity Items_Single_Table {
+  id : int <<PK>>
+  --
+  ubicacion_id : int <<FK>>
+  personaje_id : int <<FK>>
+  fraseMotivacional : String
+  nombre : String
+  monedas : int
+  costo : int
+  defensa : int
+  ataque : int
+}
+
+Personaje --|| Items_Single_Table
+Personaje --{ Items_Single_Table
+Personaje --|| Ubicacion
+Personaje -left-{ UbicacionPersonaje
+Ubicacion -left-{ UbicacionPersonaje
+Ubicacion --{ Items_Single_Table
+
+@enduml

@@ -1,0 +1,48 @@
+﻿@startuml DER
+
+entity Cliente {
+  id : Long <<PK>>
+  --
+  calle : String
+  codigoPostal : String
+  ciudad : String
+  nombre : String
+  apellido : String
+}
+
+entity Fabricante {
+  id : Long <<PK>>
+  --
+}
+
+entity Orden {
+  id : Long <<PK>>
+  --
+  ' Dejo esta tabla sola ya que uso SingleTable
+  cliente_id : int <<FK>>
+  estado_id : int <<FK>>
+  copias : int
+  calle : String
+  codigoPostal : String
+  ciudad : String
+  secuenciaMidi : String
+  nombre : String
+  secuenciaDeAudio : byte[]
+  imagenDePortada : byte[]
+}
+
+entity ModalidadDeEntrega {
+  id : Long <<PK>>
+  --
+  ' Dejo esta tabla sola ya que uso SingleTable
+  NuevosAtributos : type
+}
+
+
+Cliente --{ Orden
+Orden }--|| Fabricante
+Orden --|| ModalidadDeEntrega
+
+
+
+@enduml
