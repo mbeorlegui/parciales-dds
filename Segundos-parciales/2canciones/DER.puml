@@ -10,7 +10,6 @@ entity Playlist {
 entity Contenido {
   id : int <<PK>>
   --
-  id_playlist : int <<FK>>
   order : int
   likes : int
   dislikes : int
@@ -22,18 +21,31 @@ entity Contenido {
   ' Dejo todas aca, porque uso SintleTable
 }
 
+entity Usuario_x_Playlist {
+  usuario_id : int <<PK/FK>>
+  playlist_id : int <<PK/FK>>
+  --
+}
+
+entity Contenido_x_Playlist {
+  contenido_id : int <<PK/FK>>
+  playlist_id : int <<PK/FK>>
+  --
+}
 
 entity Usuario {
   id : int <<PK>>
   --
-  id_playlist : int <<FK>>
+  playlist_id : int <<FK>>
   nombre : String
 }
 
 
-Playlist --{ Usuario
-Playlist --|{ Contenido
-Playlist --|| Usuario
-Contenido --|| Usuario
+Playlist --{ Usuario_x_Playlist
+Usuario -right-{ Usuario_x_Playlist
+Playlist ||-left|{ Contenido_x_Playlist
+Contenido ||-|{ Contenido_x_Playlist
+Playlist }--|| Usuario
+Contenido -right-|| Usuario
 
 @enduml

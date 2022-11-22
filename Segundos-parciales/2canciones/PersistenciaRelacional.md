@@ -7,3 +7,7 @@ Mapeos:
 - La posición de un contenido en la playlist es relevante: Gracias a este requerimiento, sabemos que la lista de Contenido tiene que tener un `@OrderColumn`, y tener en cuenta que a la tabla de Contenido se le agrega una columna de order.
 - Contenido unicamente utiliza consultas polimorficas, por lo que logicamente lo que conviene hacer es un SingleTable. Ademas, la proporcion de nulls es baja (2/8 sin contar PKs ni Fks), asi que es una razón más para hacerlo así.
 - Persisto imagen con un @Lob, pues es un binario.
+- La relacion entre Playlist y Suscriptores es `@ManyToMany`, pues los suscriptores (que son usuarios) pueden tener mas de una Playlist.
+- La relacion entre Playlist y Duenio es `@ManyToOne`, pues los dueño (que son usuarios) pueden ser dueños de más de una Playlist.
+- La relacion entre Playlist y los contenidos es `@ManyToMany`, pues una Playlist tiene muchos contenidos, y muchos contenidos pueden pertenecer a varias Playlists.
+- 

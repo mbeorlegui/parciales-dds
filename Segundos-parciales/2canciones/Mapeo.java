@@ -41,13 +41,13 @@ public class Cancion implements Contenido {
 
 @Entity
 public class Playlist {
-  @OneToOne
+  @ManyToOne
   Usuario duenio;
-  @OneToMany
+  @ManyToMany
   List<Usuario> suscriptores;
-  @OneToMany
+  @ManyToMany
   @OrderColumn
-  List<Contenido> contenido;
+  List<Contenido> contenidos;
 }
 
 // Transformo Clasificacion en un enum con comportamiento
