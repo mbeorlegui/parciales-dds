@@ -34,7 +34,7 @@ class Personaje extends PersistentEntity {
   @ManyToMany
   @OrderColumn
   List<Ubicacion> ubicacionesVisitadas;
-  @OneToMany
+  @OneToMany @JoinColumn(name="personaje_id")
   List<Item> inventario;
   @OneToOne
   Arma armaEnUso;

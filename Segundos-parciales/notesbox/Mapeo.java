@@ -11,7 +11,7 @@ class Cliente extends PersistentEntity {
   Direccion direccion;
   String nombre;
   String apellido;
-  @OneToMany
+  @OneToMany @JoinColumn(name="cliente_id")
   List<Orden> ordenes;
 }
 
