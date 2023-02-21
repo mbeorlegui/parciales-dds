@@ -1,0 +1,77 @@
+﻿@startuml
+
+
+entity lugar {
+  lugar_id : int <<PK>>
+  --
+  nombre : str
+  desc : str
+  pais : str
+  latitud : int
+  longitud : int
+}
+
+entity viaje {
+  viaje_id : int <<PK>>
+  --
+  lugar_id : int <<FK>>
+  fecha : datetime
+  descripcion : str
+}
+
+entity asiento {
+  asiento_id : int <<PK>>
+  --
+  viaje_id : int <<FK>>
+  pasajero_id : int <<FK>>
+  DTYPE : str
+  numero : int
+  pulgadas_TV : int
+  tipoComando : bool
+  masajeador : bool
+  comidaGourmet : bool
+  cubreCabeza : bool
+  almohada : bool
+  bolsoVomital : bool
+}
+
+entity pasajero_x_asiento {
+  pasajero_id : int <<PK>>
+  asiento_id : int <<PK>>
+  --
+  orden : int
+}
+
+entity viaje_x_asiento {
+  viaje_id : int <<PK>>
+  asiento_id : int <<PK>>
+  --
+}
+
+entity pasajero {
+  pasajero_id : int <<PK>>
+  --
+  tipo_pasajero_id : int <<FK>>
+  nombre : str
+  edad : int
+  sexo : str
+}
+
+entity tipo_pasajero {
+  tipo_pasajero_id : int <<PK>>
+  --
+  categoria_id : int
+  nroPasajeroFrecuente : int
+  DTYPE : int
+}
+
+
+pasajero ||--|| tipo_pasajero
+pasajero ||--|{ pasajero_x_asiento
+asiento ||--|{ pasajero_x_asiento
+asiento ||-up-|{ viaje_x_asiento
+viaje ||-left-|{ viaje_x_asiento
+viaje }|--|| lugar
+viaje }|--|| lugar
+
+@enduml
