@@ -24,7 +24,7 @@ Cabe destacar que los formularios solo usan GET y POST, por lo que estamos oblig
 Para buscar las canciones por nombre:
 ```
 - GET /canciones
-  - Como busco por nombre uso un queryParams(search)
+  - Como busco por nombre uso un queryParams(nombre)
   - GET /canciones?nombre=despacito
 - Una vez que la haya seleccionado:
   - GET /canciones/:id
@@ -45,11 +45,12 @@ La accion de like podria ser un contador que alterne entre poner y sacar el me g
 
 
 ## Editor de listas de reproducción
-1. Se puede cambiar el nombre de la lista
 Para traer una lista utilizo la siguiente ruta:
 ```
 - GET /playlist/:id
 ```
+
+1. Se puede cambiar el nombre de la lista. Este requerimiento se cumple simplemente con el input de tipo de texto que se modifica. Lo que se resuelve el con HTTP es el guardado de este cambio.
 
 2. Se puede eliminar canciones de la lista (esto tiene efecto al instante, sin tener que hacer guardar)
 ```
@@ -62,4 +63,5 @@ Para cambiar el nombre de la misma se necesita apretar el boton "Guardar":
 ```
 - POST /playlist/:id
   - El nuevo nombre debe viajar en el Body de la request
+  - Body: {'nombre': 'NuevoNombre'}
 ```
