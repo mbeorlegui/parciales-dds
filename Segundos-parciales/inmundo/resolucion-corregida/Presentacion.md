@@ -15,7 +15,7 @@ Ruta: GET /vuelos/<id_vuelo>
 Agregar de favoritos: POST /user/me/favs/add 
 Quitar de favoritos: POST /user/me/favs/delete
 Agregar al carrito: POST /user/me/carrito
-Aclaración: en los tres casos anteriores, se debe enviar la informacion del vuelo (se envía el ID del mismo) por el body en request
+Aclaración: en los tres casos anteriores, se debe enviar la informacion del vuelo (se envía el ID del mismo) por el body en request (body={'id': <id>})
 ```
 
 ## Componentes HTML utilizados

@@ -38,6 +38,12 @@ Además del posibilitar el juego de ShieldGo en sí, el servidor deberá:
 </p>
 2. Exponer un API REST para buscar y consultar estadísticas públicas de cada personaje en juego, para que se puedan desarrollar otros negocios en torno al juego.
 
+Te pedimos:
+* Indicar las URLs a utilizar y su verbo HTTP, en el caso de enviar información que no sea parte de la ruta (queryParams o cuerpo) indicarlo también, para los siguientes elementos:
+  - Pantallas a realizar.
+  - Acciones indicadas de las pantallas presentadas.
+  - Acciones indicadas para la API REST que hay que exponer.
+* Si hubiera una limitación técnica por la cual hayas tenido que adaptar una ruta o un verbo. Justificar adecuadamente
 
 ## C - Arquitectura
 1. Dada la siguiente arquitectura base, en caso de que el juego tenga éxito y necesite soportar más carga para atender a un mayor número de usuarios:
